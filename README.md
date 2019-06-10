@@ -3,7 +3,7 @@ TinTin++ repository dedicated to DragonRealms. The idea comes from the ability t
 
 Scripts should be simplified as much as possible, with very clear step-by-step instructions for those who are not technically oriented. The scripts should not be complex and brilliant one liners, but expanded basically so new users can understand what is going on.
 
-The files are not well organized yet, but can be organized as I learn what the heck I am doing myself.
+The files are not well organized yet, but can be organized as I learn what the heck I am doing myself. This is my frist go with tintin++.
 
 # Installation
 First we will need to install prerequisites. Detailed instructions will follow.
