@@ -10,7 +10,7 @@ First we will need to install prerequisites. Detailed instructions will follow.
 - Termux
 - Perl (for connection script)
 - TinTin++
-- These scripts
+- git (for these scripts)
 
 ## Termux
 This can be found in the Google Play store. Not sure about iOS.
@@ -36,8 +36,17 @@ After all of this completes, you may need to "cpan Net::Telnet" again just to ma
 This is probably the easiest. 
 > pkg install tintin++
 
-## These scripts
+## git
+This will install git so you can easily download these scripts
+> pkg install git
+
+And finally this will get you these scripts
+> git clone https://github.com/dylb0t/dr-tin.git
+
 These scripts do not exist yet, so I will have to update this readme when I have some content!
+
+# Running dr-tin Sript
+You will need to modify a file with your Simutronics user name, password and the character name in question.
 
 
 
