@@ -1,9 +1,9 @@
 # dr-tin
-TinTin++ repository dedicated to DragonRealms. The idea comes from the ability to MUD from my Android Phone, and that is where my focus will be. However, there is not reason what we come up with should not be able to be used on TinTin++ for other platforms. Perhaps separate forks can be created?
+TinTin++ repository dedicated to DragonRealms. The idea comes from the ability to MUD from my Android Phone, and that is where my focus will be. However, there is not reason what we come up with should not be able to be used on TinTin++ for other platforms. Perhaps separate forks can be created? Note: first thing you will have to change is the location of your perl binary.
 
-Scripts should be simplified as much as possible, with very clear step-by-step instructions for those who are not technically oriented.
+Scripts should be simplified as much as possible, with very clear step-by-step instructions for those who are not technically oriented. The scripts should not be complex and brilliant one liners, but expanded basically so new users can understand what is going on.
 
-This project should ultimately expand
+The files are not well organized yet, but can be organized as I learn what the heck I am doing myself.
 
 # Installation
 First we will need to install prerequisites. Detailed instructions will follow.
