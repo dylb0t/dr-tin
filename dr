@@ -1,0 +1,8 @@
+key=$(./dr.conf/drconn.pl )
+session=$(cat ./dr.conf/session.conf)
+con="$session;$key;;"
+echo $con>dr.tin
+
+cat ./dr.conf/highlight.conf>>dr.tin
+#cat dr.tin
+tt++ dr.tin
