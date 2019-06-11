@@ -49,8 +49,8 @@ These scripts do not exist yet, so I will have to update this readme when I have
 You will need to modify a file with your Simutronics user name, password and the character name in question.
 
 # TODO
-roundtime countdown
-better navigation
-spell system
-maps
-
+- roundtime countdown
+- better navigation
+- spell system
+- maps
+- obvious paths above prompt
