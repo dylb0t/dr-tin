@@ -1,0 +1,3 @@
+#ses dr prime.dr.game.play.net 4901;f911c5c6f57421402503f334a859c419;;
+#read etc/highlight.conf
+#read etc/alias.conf

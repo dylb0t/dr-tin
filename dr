@@ -1,8 +1,38 @@
-key=$(./dr.conf/drconn.pl )
-session=$(cat ./dr.conf/session.conf)
-con="$session;$key;;"
-echo $con>dr.tin
+# Collect username, password, & character name
+        unset user
+	echo "Enter your Simutronics username: "
+        read -e user
 
-cat ./dr.conf/highlight.conf>>dr.tin
-#cat dr.tin
-tt++ dr.tin
+        unset password
+        prompt="Enter your password: "
+        while IFS= read -p "$prompt" -r -s -n 1 char
+        do
+                if [[ $char == $'\0' ]]
+                then
+                        break
+                fi
+
+                prompt='*'
+                password+="$char"
+                unset IFS
+        done
+        echo
+
+        unset player
+        echo "Enter your character name: "
+        read -e player
+        echo
+
+
+key=$(./bin/drconn.pl $user $password $player)
+if [ -z "$key" ];then
+        echo Unable to acquire key. Is it possible you put in the wrong password?
+        echo $key
+else
+        session=$(cat ./etc/session.conf)
+        con="$session;$key;;"
+        echo $con>dr.tin
+
+        cat ./etc/dr.conf>>dr.tin
+        tt++ dr.tin
+fi
