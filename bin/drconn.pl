@@ -1,5 +1,7 @@
 #!/usr/bin/perl -w
 
+# I did not write this script. I cannot remember where I found it.
+
 use strict;
 use Net::Telnet;
 
