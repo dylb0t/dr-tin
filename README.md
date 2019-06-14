@@ -59,3 +59,12 @@ You will need to modify a file with your Simutronics user name, password and the
 - Skinning
 - maps
 - obvious paths and Roundtime above prompt
+- Zombie scripts
+  - For experience gaining or "grinding".
+- Personality scripts
+  - Sleeping 
+  - Responding to inquiry
+- Highlights
+  - Combat wounds/stuns/balance/strikes
+  - People directing speech/actions towards you
+  
