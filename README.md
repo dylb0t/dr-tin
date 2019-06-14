@@ -50,10 +50,12 @@ You will need to modify a file with your Simutronics user name, password and the
 
 # TODO
 - COMPLETE roundtime countdown
--- Global roundtime countdown
--- Could be modified in the future to utilize return value on function instead of global variable. May be safer.
+  - Global roundtime countdown
+  - Could be modified in the future to utilize return value on function instead of global variable. May be safer.
 - better navigation
 - spell system
--- Underway. Have the Summon Admitance and Impediance systems built, and they work incredibly well.
+  - Underway. Have the Summon Admitance and Impediance systems built, and they work incredibly well.
+- Combat system
+- Skinning
 - maps
 - obvious paths and Roundtime above prompt
