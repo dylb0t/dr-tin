@@ -49,8 +49,11 @@ These scripts do not exist yet, so I will have to update this readme when I have
 You will need to modify a file with your Simutronics user name, password and the character name in question.
 
 # TODO
-- roundtime countdown
+- COMPLETE roundtime countdown
+-- Global roundtime countdown
+-- Could be modified in the future to utilize return value on function instead of global variable. May be safer.
 - better navigation
 - spell system
+-- Underway. Have the Summon Admitance and Impediance systems built, and they work incredibly well.
 - maps
-- obvious paths above prompt
+- obvious paths and Roundtime above prompt
