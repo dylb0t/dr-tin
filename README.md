@@ -59,6 +59,8 @@ You will need to modify a file with your Simutronics user name, password and the
 - Skinning
 - maps
 - obvious paths and Roundtime above prompt
+  - Added roundtime just above prompt
+  - Need further work for obvious paths etc. (Can I make these clickable?)
 - Zombie scripts
   - For experience gaining or "grinding".
 - Personality scripts
