@@ -34,7 +34,7 @@ $newpass = "";
 
 for ($i = 0; $i < length($password); $i++) {
   $newpass[$i] = chr(ord($key[$i]) ^ ord($password[$i]));
-  $newpass[$i] = chr(ord($newpass[$i]) ^ 0x40) if ord($key[$i]) >= ord('`');
+  $newpass[$i] = chr(ord($newpass[$i]) ^ 0x40) if ord($key[$i]) >= ord('a');
   $newpass[$i] = chr(ord($newpass[$i]) | 0x80) if ord($newpass[$i]) < ord(' ');
 }
 
