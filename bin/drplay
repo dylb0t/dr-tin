@@ -1,0 +1,186 @@
+#!/usr/bin/perl
+
+#
+# drplay - authenticate with Simutronics and run Dragonrealms with tintin++
+#
+# John M. Merchant
+#
+# The basic authentication process is from a script called drconn.pl of unknown
+# provenance found here: "https://github.com/dylb0t/dr-tin". The author of that
+# repository apparently doesn't know who wrote the original script and neither
+# do I.  If you do happen to know who wrote the original script, I'd love to
+# acknowledge the original author as I'm sure the process wasn't trivial to
+# figure out.
+#
+# You'll want to add either a password in $AccountPassword or a program and
+# sequence of command-line arguments in $AccountPasswordCmd for each account
+# you wish to use.  
+#
+# The program will create a tintin++ configuration file at 
+# ~/.drplay/dr-<character_id>.tin that will setup session details and then
+# try to read dr.tin in the same directory.  Everything after that is in tt++'s
+# hands.
+#
+
+use strict;
+use warnings;
+
+use Carp qw(carp croak);
+use English qw(-no_match_vars);
+use File::Path qw(make_path);
+use File::Spec::Functions;
+use Net::Telnet;
+
+my $TTPPPath = 'tt++';
+
+my $AuthHost = 'access.simutronics.com';
+my $AuthPort = 7900;
+
+# command to run to obtain password for a given account
+# (passed as array directly to a piped open)
+my $AccountPasswordCmd = {
+#    '<accountname>' => ['/usr/bin/pass', 'dragonrealms/pass'],
+};
+
+# fallback option if nothing for account is in $AccountPasswordCmd
+my $AccountPassword = {
+#    '<accountname>' => '<password>',
+};
+
+# handle command-line arguments
+if (scalar @ARGV < 2) { 
+    print STDERR "Usage: drplay <account> <character>\n";
+    exit;
+}
+
+my ($account, $character) = @ARGV;
+my $password;
+if (defined $AccountPasswordCmd->{$account}) { 
+    open my $handle, '-|', @{$AccountPasswordCmd->{$account}}
+        or croak "cannot execute password command: $OS_ERROR";
+
+    $password = readline $handle;
+    chomp $password;
+
+    close $handle
+        or carp "couldn't close pipe handle: $OS_ERROR";
+}
+else {
+    $password = $AccountPassword->{$account};
+}
+
+croak "failed to obtain password for account $account"
+    if ! defined $password or $password eq q{};
+
+# attempt to create directory for tt++ config file (if it doesn't already exist)
+my $config_dir = glob("~/.drplay");
+if (! -d $config_dir) {
+    make_path($config_dir, {'mode' => 0700})
+        or croak "cannot create $config_dir: $OS_ERROR";
+}
+
+# establish telnet connection to auth host
+my $t = Net::Telnet->new(
+    'Timeout' => 10,
+    'Host' => $AuthHost,
+    'Port' => $AuthPort,
+);
+
+# begin key challenge/response process
+$t->print('K');
+my $challenge = $t->getline;
+chomp $challenge;
+
+# xor the challenge string with our password up to its length, plus perform
+# some other bit manipulation.  
+my $response = q{};
+for (my $i = 0; $i < length($password); $i++ ) {
+    my $chal_val = ord(substr $challenge, $i, 1);
+    my $pass_val = ord(substr $password, $i, 1);
+    my $resp_val = $chal_val ^ $pass_val;
+    $resp_val ^= 0x40 if $chal_val >= 0x60;
+    $resp_val |= 0x80 if $resp_val < 0x20;
+    $response .= chr($resp_val);
+}
+
+# send response and hope we get a session key back
+$t->print(join("\t", 'A', $account, $response));
+my $a_resp = $t->getline;
+chomp $a_resp;
+my @a_resp_parts = split "\t", $a_resp;
+
+croak "no session key returned\nresponse: $a_resp"
+    if $a_resp_parts[2] ne 'KEY';
+
+my $key = $a_resp_parts[3];
+
+# choose dragonrealms and ignore the response
+$t->print("G\tDR");
+$t->getline;
+
+# get list of characters and associated ids for this account
+$t->print('C');
+my $c_resp = $t->getline;
+chomp $c_resp;
+my @c_resp_parts = split "\t", $c_resp;
+
+# try to find the character id for the given character name
+my $character_id;
+for (my $i = 6; $i < scalar @c_resp_parts; $i += 2) { 
+    if ($c_resp_parts[$i] =~ m{$character}i) { 
+        $character_id = $c_resp_parts[$i - 1];
+        last;
+    }
+}
+
+croak "failed to find character $character"
+    if ! defined $character_id;
+
+# send matching character id to get game server, port, and a repeat of the key
+# (it's possible, though maybe not likely, that this key could be different
+# than the key above, so we'll believe this one)
+$t->print(join("\t", 'L', $character_id, 'PLAY'));
+my $l_resp = $t->getline;
+chomp $l_resp;
+
+# except for the first two tab-delimited values, these should be key=value pairs
+my %game_fields;
+for my $field (split "\t", $l_resp) {
+    if ($field =~ m{(\w+)\=(.+)}) {
+        $game_fields{lc($1)} = $2;
+    }
+}
+
+# create a session config file to pass to tintin++
+my $tin_session_file = catfile($config_dir, 'dr-' . $character_id . q{.tin});
+my $tin_config_file = catfile($config_dir, 'dr.tin');
+open my $handle, '>', $tin_session_file
+    or croak "cannot create session file $tin_session_file: $OS_ERROR";
+
+printf $handle "#ses dr-%s %s %s;%s;;\n", 
+               $character_id, @game_fields{'gamehost', 'gameport', 'key'};
+printf $handle "#read %s\n", $tin_config_file;
+
+close $handle
+    or carp "couldn't close session file $tin_session_file: $OS_ERROR";
+
+# run tt++ with the session config file
+exec $TTPPPath, $tin_session_file;
+
+#
+#    drplay
+#    Copyright (C) 2020  John M. Merchant
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
